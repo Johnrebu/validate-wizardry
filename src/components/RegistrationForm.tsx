@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useReduxForm } from '../hooks/useReduxForm';
 import { Input } from '@/components/ui/input';
@@ -112,7 +111,7 @@ const RegistrationForm: React.FC = () => {
               <DatePicker
                 id="dateOfBirth"
                 selected={formData.dateOfBirth}
-                onChange={(date) => handleChange('dateOfBirth', date)}
+                onChange={(date: Date) => handleChange('dateOfBirth', date)}
                 className="w-full px-3 py-2 rounded-md focus:outline-none"
                 placeholderText="Select your date of birth"
                 showYearDropdown

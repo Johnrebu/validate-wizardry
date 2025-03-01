@@ -15,9 +15,10 @@ export const useReduxForm = () => {
   const handleChange = (field: string, value: any) => {
     dispatch(updateField({ field, value }));
     
-    // Need to cast the field to match the expected type in clearError
-    // This fixes the TypeScript error
-    dispatch(clearError(field as keyof typeof formData));
+    // Fix type error by checking if field is a valid key in errors
+    if (field in formData.errors) {
+      dispatch(clearError(field as keyof typeof formData.errors));
+    }
   };
 
   const validateForm = () => {
