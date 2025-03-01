@@ -1,3 +1,4 @@
+
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
 import { 
@@ -5,14 +6,15 @@ import {
   setError, 
   clearError, 
   setIsSubmitted, 
-  resetForm 
+  resetForm,
+  FormState
 } from '../redux/formSlice';
 
 export const useReduxForm = () => {
   const formData = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch();
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: keyof FormState, value: any) => {
     dispatch(updateField({ field, value }));
     
     // Fix type error by checking if field is a valid key in errors

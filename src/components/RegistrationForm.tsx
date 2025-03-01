@@ -1,18 +1,62 @@
+
 import React from 'react';
 import { useReduxForm } from '../hooks/useReduxForm';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
 const RegistrationForm: React.FC = () => {
   const { formData, handleChange, handleSubmit, handleReset } = useReduxForm();
+  const { toast } = useToast();
 
   const gradientBg = "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500";
   const inputClasses = "border-2 border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
   const labelClasses = "text-indigo-700 font-medium";
   const errorClasses = "text-red-500 text-sm mt-1";
   
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Use the form validation from Redux
+    const isValid = handleSubmit(e);
+    
+    if (isValid) {
+      try {
+        // Register the user with Supabase
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              dateOfBirth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null
+            }
+          }
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        toast({
+          title: "Registration successful!",
+          description: "Please check your email to confirm your account.",
+          variant: "default",
+        });
+        
+      } catch (error: any) {
+        toast({
+          title: "Registration failed",
+          description: error.message || "An error occurred during registration",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto p-8 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-xl shadow-xl">
       <h2 className="text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600">Create Your Account</h2>
@@ -29,7 +73,7 @@ const RegistrationForm: React.FC = () => {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={onSubmit} className="space-y-5">
           <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
             <Label htmlFor="firstName" className={`block ${labelClasses}`}>First Name</Label>
             <Input
