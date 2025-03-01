@@ -1,4 +1,3 @@
-
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
 import { 
@@ -15,7 +14,10 @@ export const useReduxForm = () => {
 
   const handleChange = (field: string, value: any) => {
     dispatch(updateField({ field, value }));
-    dispatch(clearError(field as any));
+    
+    // Need to cast the field to match the expected type in clearError
+    // This fixes the TypeScript error
+    dispatch(clearError(field as keyof typeof formData));
   };
 
   const validateForm = () => {
